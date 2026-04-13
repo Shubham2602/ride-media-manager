@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ app_name }}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 24px;
+        max-width: 1000px;
+        background: #f8f9fb;
+        color: #222;
+      }
+
+      h1 {
+        margin-bottom: 8px;
+      }
+
+      p {
+        color: #555;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .card {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .card h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+
+      .muted {
+        color: #666;
+        font-size: 14px;
+      }
+
+      code {
+        background: #f1f1f1;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      .empty {
+        color: #888;
+        font-style: italic;
+      }
+
+      .section {
+        margin-top: 24px;
+      }
+
+      .status-connected {
+        color: green;
+        font-weight: bold;
+      }
+
+      .status-disconnected {
+        color: #b00020;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{ app_name }}</h1>
+    <br>
+    <div class="grid">
+      <div class="card">
+        <h2>Connected devices</h2>
+
+        {% if devices %}
+        <ul>
+          {% for device in devices %}
+          <li>
+            <b>{{ device.device_name }}</b>
+            —
+            <span
+              class="{% if device.status == 'connected' %}status-connected{% else %}status-disconnected{% endif %}"
+            >
+              {{ device.status }}
+            </span>
+            <br />
+            <span class="muted">{{ device.mount_path }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty">No devices detected.</p>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <h2>Ride sessions</h2>
+
+        {% if rides %}
+        <ul>
+          {% for ride in rides %}
+          <li>
+            <b>{{ ride.name }}</b><br />
+            <span class="muted">{{ ride.archive_path }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty">No ride sessions created yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card section">
+      <h2>Useful endpoints</h2>
+      <ul>
+        <li><code>GET /api/devices</code></li>
+        <li><code>POST /api/rides</code></li>
+        <li><code>GET /api/rides</code></li>
+        <li><code>POST /api/devices/{device_id}/scan</code></li>
+        <li><code>POST /api/imports</code></li>
+        <li><code>POST /api/imports/{job_id}/start</code></li>
+        <li><code>GET /api/imports/{job_id}</code></li>
+        <li><code>GET /api/imports/{job_id}/files</code></li>
+      </ul>
+    </div>
+  </body>
+</html>

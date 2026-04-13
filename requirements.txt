@@ -1,0 +1,25 @@
+# Core API
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+
+# Data models & validation
+pydantic==2.7.4
+
+# Database (built-in sqlite, but ORM optional later)
+# sqlalchemy==2.0.30   # Uncomment when you move to ORM
+
+# File handling & utilities
+python-multipart==0.0.9
+
+# System & monitoring
+psutil==5.9.8
+
+# Optional (enable later for advanced features)
+# pyudev==0.24.1       # For real device detection (USB/SD)
+# ffmpeg-python==0.2.0 # For video processing
+# pillow==10.3.0       # For image thumbnails
+# exifread==3.0.0      # For metadata extraction
+
+# Dev & testing (optional)
+# pytest==8.2.2
+# httpx==0.27.0
