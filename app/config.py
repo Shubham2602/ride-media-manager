@@ -1,3 +1,4 @@
+import getpass
 from pathlib import Path
 from typing import Dict
 
@@ -15,12 +16,10 @@ class Settings(BaseModel):
     db_path: Path = db_dir / "ride_media_manager.db"
 
     archive_root: Path = data_dir / "ride_archive"
-
-    # Mock/dev devices
     source_root: Path = data_dir / "connected_devices"
 
-    # Real mounted USB / SD / camera devices on Raspberry Pi
-    media_mount_root: Path = Path("/media/pi")
+    # Real mounted USB / SD / camera devices on Raspberry Pi/Linux
+    media_mount_root: Path = Path("/media") / getpass.getuser()
 
     temp_dir: Path = data_dir / "temp"
     log_dir: Path = data_dir / "logs"
