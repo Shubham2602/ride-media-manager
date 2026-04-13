@@ -38,9 +38,9 @@ def create_app() -> FastAPI:
         rides = ride_service.list_rides()
 
         return templates.TemplateResponse(
+            request,
             "dashboard.html",
             {
-                "request": request,
                 "app_name": settings.app_name,
                 "devices": [dict(device) for device in devices],
                 "rides": [dict(ride) for ride in rides],

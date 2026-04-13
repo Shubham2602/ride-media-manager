@@ -31,7 +31,7 @@
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
         gap: 16px;
         margin-top: 20px;
       }
@@ -103,6 +103,10 @@
         background: #555;
       }
 
+      .btn.success {
+        background: #18864b;
+      }
+
       .btn.small {
         padding: 7px 10px;
         font-size: 13px;
@@ -120,17 +124,23 @@
         align-items: center;
       }
 
-      input[type="text"] {
-        min-width: 260px;
+      input[type="text"],
+      select {
+        min-width: 220px;
         padding: 10px 12px;
         border: 1px solid #ccc;
         border-radius: 8px;
         font-size: 14px;
+        background: white;
       }
 
       .device-actions,
       .ride-actions {
-        margin-top: 8px;
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
       }
 
       .message-box {
@@ -182,6 +192,14 @@
       .endpoint-list li {
         margin-bottom: 10px;
       }
+
+      .import-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 8px;
+      }
     </style>
   </head>
   <body>
@@ -225,16 +243,39 @@
 
             <div class="muted">{{ device.mount_path }}</div>
 
+            {% if device.status == "connected" %}
             <div class="device-actions">
-              {% if device.status == "connected" %}
               <button
                 class="btn small"
                 onclick="scanDevice({{ device.id }}, '{{ device.device_name }}')"
               >
                 Scan
               </button>
-              {% endif %}
             </div>
+
+            <div class="import-row">
+              <select id="ride-select-{{ device.id }}">
+                <option value="">Select ride session</option>
+                {% for ride in rides %}
+                <option value="{{ ride.id }}">{{ ride.name }}</option>
+                {% endfor %}
+              </select>
+
+              <button
+                class="btn success small"
+                onclick="importDevice({{ device.id }}, '{{ device.device_name }}')"
+                {% if not rides %}disabled{% endif %}
+              >
+                Import
+              </button>
+            </div>
+
+            {% if not rides %}
+            <div class="muted" style="margin-top: 8px;">
+              Create a ride session first to import media.
+            </div>
+            {% endif %}
+            {% endif %}
           </div>
           {% endfor %}
         {% else %}
@@ -300,6 +341,62 @@
           );
         } catch (error) {
           showMessage(`Scan failed: ${error.message}`, "error");
+        }
+      }
+
+      async function importDevice(deviceId, deviceName) {
+        const select = document.getElementById(`ride-select-${deviceId}`);
+        const rideSessionId = select.value;
+
+        if (!rideSessionId) {
+          showMessage("Please select a ride session before importing.", "error");
+          return;
+        }
+
+        try {
+          showMessage(`Creating import job for ${deviceName}...`, "success");
+
+          const createResponse = await fetch("/api/imports", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ride_session_id: Number(rideSessionId),
+              device_id: deviceId,
+            }),
+          });
+
+          const createData = await createResponse.json();
+
+          if (!createResponse.ok) {
+            throw new Error(createData.detail || "Failed to create import job");
+          }
+
+          const jobId = createData.id;
+
+          showMessage(`Starting import for ${deviceName}...`, "success");
+
+          const startResponse = await fetch(`/api/imports/${jobId}/start`, {
+            method: "POST",
+          });
+
+          const startData = await startResponse.json();
+
+          if (!startResponse.ok) {
+            throw new Error(startData.detail || "Failed to start import");
+          }
+
+          showMessage(
+            `Import finished for ${deviceName}. Status: ${startData.job_status}. Copied: ${startData.copied_files}, duplicates skipped: ${startData.skipped_duplicates}, failed: ${startData.failed_files}.`,
+            startData.failed_files > 0 ? "error" : "success"
+          );
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } catch (error) {
+          showMessage(`Import failed: ${error.message}`, "error");
         }
       }
 
