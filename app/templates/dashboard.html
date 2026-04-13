@@ -510,7 +510,7 @@
           }
 
           showMessage(
-            `Scan complete for ${deviceName}: ${data.file_count} file(s), ${data.total_bytes} bytes found.`,
+            `Scan complete for ${deviceName}: ${data.file_count} file(s), ${formatBytesToGB(data.total_bytes)} found.`,
             "success"
           );
         } catch (error) {
@@ -694,6 +694,26 @@
           helpMenu.classList.remove("open");
         }
       });
+
+      function formatBytesToGB(bytes) {
+        const gb = bytes / (1024 * 1024 * 1024);
+
+        if (gb >= 1) {
+          return `${gb.toFixed(2)} GB`;
+        }
+
+        const mb = bytes / (1024 * 1024);
+        if (mb >= 1) {
+          return `${mb.toFixed(1)} MB`;
+        }
+
+        const kb = bytes / 1024;
+        if (kb >= 1) {
+          return `${kb.toFixed(1)} KB`;
+        }
+
+        return `${bytes} bytes`;
+      }
     </script>
   </body>
 </html>
