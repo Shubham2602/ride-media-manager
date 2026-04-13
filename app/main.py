@@ -1,7 +1,10 @@
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
 from app.api.devices import router as devices_router
 from app.api.imports import router as imports_router
 from app.api.rides import router as rides_router
@@ -31,11 +34,26 @@ def create_app() -> FastAPI:
     app.include_router(rides_router, prefix="/api")
     app.include_router(imports_router, prefix="/api")
 
+    def format_ride_for_display(ride_row):
+        ride = dict(ride_row)
+        archive_path = Path(ride["archive_path"])
+        base_path = settings.archive_root.resolve()
+
+        try:
+            relative_path = archive_path.relative_to(base_path)
+            ride["archive_path_display"] = str(relative_path)
+        except ValueError:
+            ride["archive_path_display"] = ride["archive_path"]
+
+        return ride
+
     @app.get("/", response_class=HTMLResponse)
     def dashboard(request: Request):
         device_service.refresh_devices()
         devices = device_service.list_devices()
         rides = ride_service.list_rides()
+
+        recent_rides = [format_ride_for_display(ride) for ride in rides[:3]]
 
         return templates.TemplateResponse(
             request,
@@ -43,7 +61,7 @@ def create_app() -> FastAPI:
             {
                 "app_name": settings.app_name,
                 "devices": [dict(device) for device in devices],
-                "rides": [dict(ride) for ride in rides],
+                "rides": recent_rides,
             },
         )
 

@@ -21,3 +21,12 @@ def create_ride(payload: RideCreateRequest) -> RideResponse:
 def list_rides() -> List[RideResponse]:
     rows = ride_service.list_rides()
     return [RideResponse(**dict(row)) for row in rows]
+
+
+@router.delete("/rides/{ride_id}")
+def delete_ride(ride_id: int):
+    try:
+        ride_service.delete_ride(ride_id)
+        return {"status": "ok", "message": "Ride session removed"}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))

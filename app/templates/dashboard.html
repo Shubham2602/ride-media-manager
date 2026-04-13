@@ -7,93 +7,89 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        margin: 24px;
-        max-width: 1100px;
+        margin: 12px;
         background: #f8f9fb;
         color: #222;
+        font-size: 14px;
       }
 
       h1 {
-        margin-bottom: 8px;
+        margin: 0;
+        font-size: 22px;
       }
 
-      p {
-        color: #555;
+      .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .header-left {
+        flex: 1;
+      }
+
+      .header-right {
+        position: relative;
       }
 
       .topbar {
         display: flex;
-        gap: 12px;
+        gap: 8px;
         flex-wrap: wrap;
         align-items: center;
-        margin: 20px 0 24px;
+        margin: 10px 0 12px;
       }
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-        gap: 16px;
-        margin-top: 20px;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 10px;
+        margin-top: 8px;
       }
 
       .card {
         background: #fff;
         border: 1px solid #ddd;
-        border-radius: 12px;
-        padding: 16px;
+        border-radius: 10px;
+        padding: 12px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
 
       .card h2 {
-        margin-top: 0;
-        font-size: 24px;
-      }
-
-      ul {
-        padding-left: 18px;
-        margin: 0;
-      }
-
-      li {
-        margin-bottom: 12px;
+        margin: 0 0 10px 0;
+        font-size: 18px;
       }
 
       .muted {
         color: #666;
-        font-size: 14px;
-      }
-
-      code {
-        background: #f1f1f1;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 13px;
+        font-size: 12px;
       }
 
       .empty {
         color: #888;
         font-style: italic;
-      }
-
-      .section {
-        margin-top: 24px;
+        font-size: 13px;
       }
 
       .status-connected {
         color: green;
         font-weight: bold;
+        font-size: 12px;
       }
 
       .status-disconnected {
         color: #b00020;
         font-weight: bold;
+        font-size: 12px;
       }
 
       .btn {
         border: none;
         border-radius: 8px;
-        padding: 10px 14px;
-        font-size: 14px;
+        padding: 8px 10px;
+        font-size: 12px;
         cursor: pointer;
         background: #1f6feb;
         color: white;
@@ -107,9 +103,23 @@
         background: #18864b;
       }
 
+      .btn.danger {
+        background: #c0392b;
+      }
+
+      .btn.help {
+        background: #2f3542;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 50%;
+      }
+
       .btn.small {
-        padding: 7px 10px;
-        font-size: 13px;
+        padding: 6px 8px;
+        font-size: 11px;
       }
 
       .btn:disabled {
@@ -117,38 +127,22 @@
         cursor: not-allowed;
       }
 
-      .inline-form {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
       input[type="text"],
       select {
-        min-width: 220px;
-        padding: 10px 12px;
+        min-width: 150px;
+        padding: 8px 10px;
         border: 1px solid #ccc;
         border-radius: 8px;
-        font-size: 14px;
+        font-size: 12px;
         background: white;
       }
 
-      .device-actions,
-      .ride-actions {
-        margin-top: 10px;
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
       .message-box {
-        margin-top: 16px;
-        padding: 12px 14px;
+        margin-top: 8px;
+        padding: 10px 12px;
         border-radius: 8px;
         display: none;
-        font-size: 14px;
+        font-size: 12px;
       }
 
       .message-box.success {
@@ -168,8 +162,8 @@
       .device-row,
       .ride-row {
         border-bottom: 1px solid #eee;
-        padding-bottom: 12px;
-        margin-bottom: 12px;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
       }
 
       .device-row:last-child,
@@ -179,47 +173,198 @@
         padding-bottom: 0;
       }
 
-      .badge {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 999px;
-        font-size: 12px;
-        background: #eef3ff;
-        color: #2a4ea1;
-        margin-left: 6px;
+      .device-title,
+      .ride-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
       }
 
-      .endpoint-list li {
-        margin-bottom: 10px;
+      .ride-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .ride-left {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 999px;
+        font-size: 11px;
+        background: #eef3ff;
+        color: #2a4ea1;
+      }
+
+      .device-actions {
+        margin-top: 6px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        align-items: center;
       }
 
       .import-row {
         display: flex;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
         align-items: center;
-        margin-top: 8px;
+        margin-top: 6px;
+      }
+
+      .help-menu {
+        position: absolute;
+        top: 40px;
+        right: 0;
+        width: 270px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        padding: 12px;
+        display: none;
+        z-index: 1000;
+      }
+
+      .help-menu.open {
+        display: block;
+      }
+
+      .help-menu h3 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+      }
+
+      .help-menu ul {
+        padding-left: 18px;
+        margin: 0;
+      }
+
+      .help-menu li {
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+
+      .help-label {
+        display: block;
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 6px;
+      }
+
+      code {
+        background: #f1f1f1;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 11px;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      }
+
+      .modal-backdrop.open {
+        display: flex;
+      }
+
+      .modal {
+        width: min(320px, calc(100vw - 24px));
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+        padding: 14px;
+      }
+
+      .modal h3 {
+        margin: 0 0 10px 0;
+        font-size: 17px;
+      }
+
+      .modal p {
+        margin: 0 0 10px 0;
+        font-size: 12px;
+        color: #666;
+      }
+
+      .modal input[type="text"] {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      @media (max-width: 700px) {
+        .grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+
+        h1 {
+          font-size: 20px;
+        }
+
+        .card h2 {
+          font-size: 16px;
+        }
+
+        input[type="text"],
+        select {
+          min-width: 120px;
+          width: 100%;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>{{ app_name }}</h1>
-    <p>Ride Media Manager MVP is running.</p>
+    <div class="header-row">
+      <div class="header-left">
+        <h1>{{ app_name }}</h1>
+      </div>
+
+      <div class="header-right">
+        <button id="help-toggle-btn" class="btn help" title="Help">?</button>
+
+        <div id="help-menu" class="help-menu">
+          <span class="help-label">Available API endpoints</span>
+          <h3>Useful Endpoints</h3>
+          <ul>
+            <li><code>GET /api/devices</code></li>
+            <li><code>POST /api/rides</code></li>
+            <li><code>GET /api/rides</code></li>
+            <li><code>DELETE /api/rides/{ride_id}</code></li>
+            <li><code>POST /api/devices/{device_id}/scan</code></li>
+            <li><code>POST /api/imports</code></li>
+            <li><code>POST /api/imports/{job_id}/start</code></li>
+            <li><code>GET /api/imports/{job_id}</code></li>
+            <li><code>GET /api/imports/{job_id}/files</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
     <div class="topbar">
-      <form id="create-ride-form" class="inline-form">
-        <input
-          type="text"
-          id="ride-name"
-          name="ride_name"
-          placeholder="Enter ride session name"
-          required
-        />
-        <button type="submit" class="btn">Create Ride Session</button>
-      </form>
+      <button id="open-ride-modal-btn" class="btn">+ Ride Session</button>
 
       <button id="refresh-devices-btn" class="btn secondary">
-        Refresh Devices
+        Rescan
       </button>
     </div>
 
@@ -227,12 +372,12 @@
 
     <div class="grid">
       <div class="card">
-        <h2>Connected devices</h2>
+        <h2>Connected Devices</h2>
 
         {% if devices %}
           {% for device in devices %}
           <div class="device-row">
-            <div>
+            <div class="device-title">
               <b>{{ device.device_name }}</b>
               <span
                 class="{% if device.status == 'connected' %}status-connected{% else %}status-disconnected{% endif %}"
@@ -255,7 +400,7 @@
 
             <div class="import-row">
               <select id="ride-select-{{ device.id }}">
-                <option value="">Select ride session</option>
+                <option value="">Ride</option>
                 {% for ride in rides %}
                 <option value="{{ ride.id }}">{{ ride.name }}</option>
                 {% endfor %}
@@ -271,8 +416,8 @@
             </div>
 
             {% if not rides %}
-            <div class="muted" style="margin-top: 8px;">
-              Create a ride session first to import media.
+            <div class="muted" style="margin-top: 6px;">
+              Create a ride first.
             </div>
             {% endif %}
             {% endif %}
@@ -284,16 +429,28 @@
       </div>
 
       <div class="card">
-        <h2>Ride sessions</h2>
+        <h2>Ride Sessions</h2>
 
         {% if rides %}
           {% for ride in rides %}
           <div class="ride-row">
-            <div>
-              <b>{{ ride.name }}</b>
-              <span class="badge">{{ ride.ride_date }}</span>
+            <div class="ride-header">
+              <div class="ride-left">
+                <div class="ride-title">
+                  <b>{{ ride.name }}</b>
+                  <span class="badge">{{ ride.ride_date }}</span>
+                </div>
+                <div class="muted">{{ ride.archive_path_display }}</div>
+              </div>
+
+              <button
+                class="btn danger small"
+                onclick="deleteRide({{ ride.id }}, '{{ ride.name }}')"
+                title="Remove ride session"
+              >
+                ✕
+              </button>
             </div>
-            <div class="muted">{{ ride.archive_path }}</div>
           </div>
           {% endfor %}
         {% else %}
@@ -302,18 +459,28 @@
       </div>
     </div>
 
-    <div class="card section">
-      <h2>Useful endpoints</h2>
-      <ul class="endpoint-list">
-        <li><code>GET /api/devices</code></li>
-        <li><code>POST /api/rides</code></li>
-        <li><code>GET /api/rides</code></li>
-        <li><code>POST /api/devices/{device_id}/scan</code></li>
-        <li><code>POST /api/imports</code></li>
-        <li><code>POST /api/imports/{job_id}/start</code></li>
-        <li><code>GET /api/imports/{job_id}</code></li>
-        <li><code>GET /api/imports/{job_id}/files</code></li>
-      </ul>
+    <div id="ride-modal-backdrop" class="modal-backdrop">
+      <div class="modal">
+        <h3>Create Ride Session</h3>
+        <p>Enter a short ride name.</p>
+
+        <form id="create-ride-form">
+          <input
+            type="text"
+            id="ride-name"
+            name="ride_name"
+            placeholder="Ride session name"
+            required
+          />
+
+          <div class="modal-actions">
+            <button type="button" id="close-ride-modal-btn" class="btn secondary">
+              Cancel
+            </button>
+            <button type="submit" class="btn">Create</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <script>
@@ -400,12 +567,65 @@
         }
       }
 
+      async function deleteRide(rideId, rideName) {
+        const confirmed = window.confirm(
+          `Remove ride session "${rideName}"?`
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/rides/${rideId}`, {
+            method: "DELETE",
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.detail || "Failed to remove ride session");
+          }
+
+          showMessage(`Ride session removed: ${rideName}`, "success");
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } catch (error) {
+          showMessage(`Remove failed: ${error.message}`, "error");
+        }
+      }
+
+      const rideModalBackdrop = document.getElementById("ride-modal-backdrop");
+      const openRideModalBtn = document.getElementById("open-ride-modal-btn");
+      const closeRideModalBtn = document.getElementById("close-ride-modal-btn");
+      const rideNameInput = document.getElementById("ride-name");
+
+      function openRideModal() {
+        rideModalBackdrop.classList.add("open");
+        setTimeout(() => rideNameInput.focus(), 50);
+      }
+
+      function closeRideModal() {
+        rideModalBackdrop.classList.remove("open");
+        rideNameInput.value = "";
+      }
+
+      openRideModalBtn.addEventListener("click", openRideModal);
+      closeRideModalBtn.addEventListener("click", closeRideModal);
+
+      rideModalBackdrop.addEventListener("click", function (event) {
+        if (event.target === rideModalBackdrop) {
+          closeRideModal();
+        }
+      });
+
       document
         .getElementById("create-ride-form")
         .addEventListener("submit", async function (event) {
           event.preventDefault();
 
-          const rideNameInput = document.getElementById("ride-name");
           const rideName = rideNameInput.value.trim();
 
           if (!rideName) {
@@ -429,11 +649,11 @@
             }
 
             showMessage(`Ride session created: ${data.name}`, "success");
-            rideNameInput.value = "";
+            closeRideModal();
 
             setTimeout(() => {
               window.location.reload();
-            }, 600);
+            }, 500);
           } catch (error) {
             showMessage(`Create failed: ${error.message}`, "error");
           }
@@ -444,6 +664,29 @@
         .addEventListener("click", function () {
           window.location.reload();
         });
+
+      const helpToggleBtn = document.getElementById("help-toggle-btn");
+      const helpMenu = document.getElementById("help-menu");
+
+      helpToggleBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        helpMenu.classList.toggle("open");
+      });
+
+      helpMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+      });
+
+      document.addEventListener("click", function () {
+        helpMenu.classList.remove("open");
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeRideModal();
+          helpMenu.classList.remove("open");
+        }
+      });
     </script>
   </body>
 </html>

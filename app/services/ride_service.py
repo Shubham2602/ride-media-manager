@@ -1,4 +1,6 @@
 from datetime import datetime
+from pathlib import Path
+import shutil
 
 from app.config import settings
 from app.db import db, get_connection
@@ -81,6 +83,40 @@ class RideService:
             raise ValueError("Ride session not found")
 
         return row
+
+    def delete_ride(self, ride_id: int):
+        with db.lock:
+            with get_connection() as connection:
+                ride = connection.execute(
+                    "SELECT * FROM ride_sessions WHERE id = ?",
+                    (ride_id,),
+                ).fetchone()
+
+                if not ride:
+                    raise ValueError("Ride session not found")
+
+                import_jobs = connection.execute(
+                    "SELECT COUNT(*) AS count FROM import_jobs WHERE ride_session_id = ?",
+                    (ride_id,),
+                ).fetchone()
+
+                if import_jobs["count"] > 0:
+                    raise ValueError(
+                        "Cannot remove ride session with existing import jobs"
+                    )
+
+                archive_path = Path(ride["archive_path"])
+
+                connection.execute(
+                    "DELETE FROM ride_sessions WHERE id = ?",
+                    (ride_id,),
+                )
+                connection.commit()
+
+        if archive_path.exists() and archive_path.is_dir():
+            shutil.rmtree(archive_path, ignore_errors=True)
+
+        return True
 
 
 ride_service = RideService()
