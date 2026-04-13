@@ -8,7 +8,8 @@ from app.utils.time_utils import now_iso
 class DeviceService:
     def refresh_devices(self):
         sources = [
-            settings.connected_devices_root,  # mock/dev
+            settings.source_root,
+            settings.media_mount_root, # mock/dev
             Path("/media/pi"),                # real devices
         ]
 

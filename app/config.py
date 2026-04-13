@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict
 
 from pydantic import BaseModel
 
@@ -14,13 +15,19 @@ class Settings(BaseModel):
     db_path: Path = db_dir / "ride_media_manager.db"
 
     archive_root: Path = data_dir / "ride_archive"
+
+    # Mock/dev devices
     source_root: Path = data_dir / "connected_devices"
+
+    # Real mounted USB / SD / camera devices on Raspberry Pi
+    media_mount_root: Path = Path("/media/pi")
+
     temp_dir: Path = data_dir / "temp"
     log_dir: Path = data_dir / "logs"
 
     temp_extension: str = ".part"
 
-    media_extensions: dict = {
+    media_extensions: Dict[str, str] = {
         ".mp4": "video",
         ".mov": "video",
         ".mkv": "video",
