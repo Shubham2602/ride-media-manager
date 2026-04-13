@@ -8,7 +8,7 @@
       body {
         font-family: Arial, sans-serif;
         margin: 24px;
-        max-width: 1000px;
+        max-width: 1100px;
         background: #f8f9fb;
         color: #222;
       }
@@ -21,9 +21,17 @@
         color: #555;
       }
 
+      .topbar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 20px 0 24px;
+      }
+
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
         gap: 16px;
         margin-top: 20px;
       }
@@ -38,7 +46,7 @@
 
       .card h2 {
         margin-top: 0;
-        font-size: 20px;
+        font-size: 24px;
       }
 
       ul {
@@ -47,7 +55,7 @@
       }
 
       li {
-        margin-bottom: 10px;
+        margin-bottom: 12px;
       }
 
       .muted {
@@ -80,31 +88,155 @@
         color: #b00020;
         font-weight: bold;
       }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 14px;
+        cursor: pointer;
+        background: #1f6feb;
+        color: white;
+      }
+
+      .btn.secondary {
+        background: #555;
+      }
+
+      .btn.small {
+        padding: 7px 10px;
+        font-size: 13px;
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .inline-form {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      input[type="text"] {
+        min-width: 260px;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      .device-actions,
+      .ride-actions {
+        margin-top: 8px;
+      }
+
+      .message-box {
+        margin-top: 16px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        display: none;
+        font-size: 14px;
+      }
+
+      .message-box.success {
+        display: block;
+        background: #eaf7ea;
+        color: #1f6b2a;
+        border: 1px solid #b6e2bb;
+      }
+
+      .message-box.error {
+        display: block;
+        background: #fdecec;
+        color: #9f1f1f;
+        border: 1px solid #f3b6b6;
+      }
+
+      .device-row,
+      .ride-row {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+      }
+
+      .device-row:last-child,
+      .ride-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: #eef3ff;
+        color: #2a4ea1;
+        margin-left: 6px;
+      }
+
+      .endpoint-list li {
+        margin-bottom: 10px;
+      }
     </style>
   </head>
   <body>
     <h1>{{ app_name }}</h1>
-    <br>
+    <p>Ride Media Manager MVP is running.</p>
+
+    <div class="topbar">
+      <form id="create-ride-form" class="inline-form">
+        <input
+          type="text"
+          id="ride-name"
+          name="ride_name"
+          placeholder="Enter ride session name"
+          required
+        />
+        <button type="submit" class="btn">Create Ride Session</button>
+      </form>
+
+      <button id="refresh-devices-btn" class="btn secondary">
+        Refresh Devices
+      </button>
+    </div>
+
+    <div id="message-box" class="message-box"></div>
+
     <div class="grid">
       <div class="card">
         <h2>Connected devices</h2>
 
         {% if devices %}
-        <ul>
           {% for device in devices %}
-          <li>
-            <b>{{ device.device_name }}</b>
-            —
-            <span
-              class="{% if device.status == 'connected' %}status-connected{% else %}status-disconnected{% endif %}"
-            >
-              {{ device.status }}
-            </span>
-            <br />
-            <span class="muted">{{ device.mount_path }}</span>
-          </li>
+          <div class="device-row">
+            <div>
+              <b>{{ device.device_name }}</b>
+              <span
+                class="{% if device.status == 'connected' %}status-connected{% else %}status-disconnected{% endif %}"
+              >
+                {{ device.status }}
+              </span>
+            </div>
+
+            <div class="muted">{{ device.mount_path }}</div>
+
+            <div class="device-actions">
+              {% if device.status == "connected" %}
+              <button
+                class="btn small"
+                onclick="scanDevice({{ device.id }}, '{{ device.device_name }}')"
+              >
+                Scan
+              </button>
+              {% endif %}
+            </div>
+          </div>
           {% endfor %}
-        </ul>
         {% else %}
         <p class="empty">No devices detected.</p>
         {% endif %}
@@ -114,14 +246,15 @@
         <h2>Ride sessions</h2>
 
         {% if rides %}
-        <ul>
           {% for ride in rides %}
-          <li>
-            <b>{{ ride.name }}</b><br />
-            <span class="muted">{{ ride.archive_path }}</span>
-          </li>
+          <div class="ride-row">
+            <div>
+              <b>{{ ride.name }}</b>
+              <span class="badge">{{ ride.ride_date }}</span>
+            </div>
+            <div class="muted">{{ ride.archive_path }}</div>
+          </div>
           {% endfor %}
-        </ul>
         {% else %}
         <p class="empty">No ride sessions created yet.</p>
         {% endif %}
@@ -130,7 +263,7 @@
 
     <div class="card section">
       <h2>Useful endpoints</h2>
-      <ul>
+      <ul class="endpoint-list">
         <li><code>GET /api/devices</code></li>
         <li><code>POST /api/rides</code></li>
         <li><code>GET /api/rides</code></li>
@@ -141,5 +274,79 @@
         <li><code>GET /api/imports/{job_id}/files</code></li>
       </ul>
     </div>
+
+    <script>
+      function showMessage(text, type) {
+        const box = document.getElementById("message-box");
+        box.className = "message-box " + type;
+        box.textContent = text;
+      }
+
+      async function scanDevice(deviceId, deviceName) {
+        try {
+          const response = await fetch(`/api/devices/${deviceId}/scan`, {
+            method: "POST",
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.detail || "Failed to scan device");
+          }
+
+          showMessage(
+            `Scan complete for ${deviceName}: ${data.file_count} file(s), ${data.total_bytes} bytes found.`,
+            "success"
+          );
+        } catch (error) {
+          showMessage(`Scan failed: ${error.message}`, "error");
+        }
+      }
+
+      document
+        .getElementById("create-ride-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const rideNameInput = document.getElementById("ride-name");
+          const rideName = rideNameInput.value.trim();
+
+          if (!rideName) {
+            showMessage("Please enter a ride session name.", "error");
+            return;
+          }
+
+          try {
+            const response = await fetch("/api/rides", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name: rideName }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.detail || "Failed to create ride session");
+            }
+
+            showMessage(`Ride session created: ${data.name}`, "success");
+            rideNameInput.value = "";
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 600);
+          } catch (error) {
+            showMessage(`Create failed: ${error.message}`, "error");
+          }
+        });
+
+      document
+        .getElementById("refresh-devices-btn")
+        .addEventListener("click", function () {
+          window.location.reload();
+        });
+    </script>
   </body>
 </html>
